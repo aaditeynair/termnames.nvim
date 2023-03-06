@@ -61,8 +61,11 @@ end
 
 -- Autocmds
 
+local termnames_augroup = vim.api.nvim_create_augroup("TERMNAMES_NVIM", { clear = true })
+
 vim.api.nvim_create_autocmd("BufUnload", {
 	desc = "Delete terminal from terminal table",
+	group = termnames_augroup,
 	callback = function()
 		local current_bufnr = tonumber(vim.fn.expand("<abuf>"))
 		if M.terminals[current_bufnr] ~= nil and current_bufnr ~= nil then
