@@ -53,17 +53,30 @@ end
 -- Save and restore terminal data
 
 function M.save_terminal_data()
-	local data = vim.fn.json_decode(vim.fn.readfile(data_location))
+	local file = Path:new(data_location)
+	local data = vim.json.decode(file:read())
 	data[vim.fn.getcwd()] = M.terminals
-	Path:new(data_location):write(vim.fn.json_encode(data), "w")
+	file:write(vim.json.encode(data), "w")
+	file:close()
 end
 
-function M.restore_terminals(data)
-	if data == nil then
-		M.terminals = {}
-	else
-		M.terminals = data
+function M.restore_terminals()
+	if not vim.fn.filereadable(data_location) then
+		return
 	end
+
+	local file = Path:new(data_location)
+	local data = vim.json.decode(file:read())
+	if data ~= nil then
+		local cwd = vim.fn.getcwd()
+		local cwd_data = data[cwd]
+		if cwd_data ~= nil then
+			M.terminals = cwd_data
+		else
+			M.terminals = {}
+		end
+	end
+	file:close()
 end
 
 -- Autocmds
@@ -89,3 +102,13 @@ vim.api.nvim_create_autocmd("ExitPre", {
 })
 
 return M
+
+-- M.find_buffer_by_name = function(name)
+--   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+--     local buf_name = vim.api.nvim_buf_get_name(buf)
+--     if buf_name == name then
+--       return buf
+--     end
+--   end
+--   return -1
+-- end
