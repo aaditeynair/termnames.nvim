@@ -8,8 +8,8 @@ M.terminals = {}
 -- Create terminal (CREATE)
 function M.create_terminal(terminal_name)
 	vim.cmd("terminal")
-	local bufnr = tostring(vim.api.nvim_win_get_buf(0))
-	M.terminals[bufnr] = terminal_name
+	local buf_name = vim.api.nvim_buf_get_name(0)
+	M.terminals[buf_name] = terminal_name
 end
 
 -- Get data about terminals (READ)
@@ -17,23 +17,20 @@ function M.get_terminals()
 	return M.terminals
 end
 
-function M.get_terminal_name(bufnr)
-	if type(bufnr) ~= "string" then
-		bufnr = tostring(bufnr)
-	end
-	return M.terminals[bufnr]
+function M.get_terminal_name(buf_name)
+	return M.terminals[buf_name]
 end
 
 function M.get_current_terminal_name()
-	local current_bufnr = tostring(vim.api.nvim_win_get_buf(0))
-	return M.get_terminal_name(current_bufnr)
+	local current_buf_name = vim.api.nvim_buf_get_name(0)
+	return M.get_terminal_name(current_buf_name)
 end
 
 -- Rename terminal (UPDATE)
 function M.rename_terminal(new_name)
-	local bufnr = tostring(vim.api.nvim_win_get_buf(0))
-	if M.terminals[bufnr] ~= nil then
-		M.terminals[bufnr] = new_name
+	local buf_name = vim.api.nvim_buf_get_name(0)
+	if M.terminals[buf_name] ~= nil then
+		M.terminals[buf_name] = new_name
 	else
 		print("Current buffer is not a terminal")
 	end
@@ -41,9 +38,9 @@ end
 
 -- Delete terminal (DELETE)
 function M.delete_terminal()
-	local bufnr = tostring(vim.api.nvim_win_get_buf(0))
-	if M.terminals[bufnr] ~= nil then
-		M.terminals[bufnr] = nil
+	local buf_name = vim.api.nvim_buf_get_name(0)
+	if M.terminals[buf_name] ~= nil then
+		M.terminals[buf_name] = nil
 		vim.cmd("Bdelete!")
 	else
 		print("Current buffer is not a terminal")
@@ -87,9 +84,9 @@ vim.api.nvim_create_autocmd("BufUnload", {
 	desc = "Delete terminal from terminal table",
 	group = termnames_augroup,
 	callback = function()
-		local current_bufnr = vim.fn.expand("<abuf>")
-		if M.terminals[current_bufnr] ~= nil then
-			M.terminals[current_bufnr] = nil
+		local current_buf_name = vim.fn.expand("<afile>")
+		if M.terminals[current_buf_name] ~= nil then
+			M.terminals[current_buf_name] = nil
 		end
 	end,
 })
