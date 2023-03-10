@@ -34,6 +34,28 @@ function M.get_current_terminal_name()
 	return M.get_terminal_name(current_buf_name)
 end
 
+function M.get_bufnr_of_terminal(term_name)
+	local buffer_name = ""
+	for buf_name, terminal_name in pairs(GetCWDTermData()) do
+		if terminal_name == term_name then
+			buffer_name = buf_name
+		end
+	end
+
+	if not buffer_name then
+		return nil
+	end
+
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		local buf_name = vim.api.nvim_buf_get_name(buf)
+		if buf_name == buffer_name then
+			return buf
+		end
+	end
+
+	return nil
+end
+
 -- Rename terminal (UPDATE)
 function M.rename_terminal(new_name)
 	local buf_name = vim.api.nvim_buf_get_name(0)
@@ -105,14 +127,6 @@ vim.api.nvim_create_autocmd("ExitPre", {
 	end,
 })
 
-return M
+M.restore_terminals()
 
--- M.find_buffer_by_name = function(name)
---   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
---     local buf_name = vim.api.nvim_buf_get_name(buf)
---     if buf_name == name then
---       return buf
---     end
---   end
---   return -1
--- end
+return M
