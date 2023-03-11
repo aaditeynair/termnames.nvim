@@ -83,9 +83,17 @@ end
 function M.save_terminal_data()
 	local file = Path:new(data_location)
 	local data = vim.json.decode(file:read())
-	data[vim.fn.getcwd()] = GetCWDTermData()
+	local terminal_data = GetCWDTermData()
+
+	data[vim.fn.getcwd()] = terminal_data
 	file:write(vim.json.encode(data), "w")
 	file:close()
+
+	for _, term in ipairs(terminal_data) do
+		if vim.fn.bufexists(term.bufnr) then
+			vim.api.nvim_buf_delete(term.bufnr, { force = true })
+		end
+	end
 end
 
 function M.restore_terminals()
