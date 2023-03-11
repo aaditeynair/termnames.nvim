@@ -14,9 +14,17 @@ end
 -- Create terminal (CREATE)
 function M.create_terminal(terminal_name)
 	vim.cmd("terminal")
-	local buf_name = vim.api.nvim_buf_get_name(0)
 	local term_data = GetCWDTermData()
-	term_data[buf_name] = terminal_name
+	local id = 1
+	if term_data[1] then
+		id = term_data[#term_data].id + 1
+	end
+	local new_term = {
+		["name"] = terminal_name,
+		["bufnr"] = vim.api.nvim_win_get_buf(0),
+		["id"] = id,
+	}
+	table.insert(term_data, new_term)
 end
 
 -- Get data about terminals (READ)
@@ -24,58 +32,44 @@ function M.get_terminals()
 	return GetCWDTermData()
 end
 
-function M.get_terminal_name(buf_name)
+function M.get_terminal_name(bufnr)
 	local term_data = GetCWDTermData()
-	return term_data[buf_name]
+	for _, term in ipairs(term_data) do
+		if term.bufnr == bufnr then
+			return term
+		end
+	end
 end
 
 function M.get_current_terminal_name()
-	local current_buf_name = vim.api.nvim_buf_get_name(0)
-	return M.get_terminal_name(current_buf_name)
-end
-
-function M.get_bufnr_of_terminal(term_name)
-	local buffer_name = ""
-	for buf_name, terminal_name in pairs(GetCWDTermData()) do
-		if terminal_name == term_name then
-			buffer_name = buf_name
-		end
-	end
-
-	if not buffer_name then
-		return nil
-	end
-
-	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-		local buf_name = vim.api.nvim_buf_get_name(buf)
-		if buf_name == buffer_name then
-			return buf
-		end
-	end
-
-	return nil
+	local current_bufnr = vim.api.nvim_win_get_buf(0)
+	return M.get_terminal_name(current_bufnr)
 end
 
 -- Rename terminal (UPDATE)
 function M.rename_terminal(new_name)
-	local buf_name = vim.api.nvim_buf_get_name(0)
+	local bufnr = vim.api.nvim_win_get_buf(0)
 	local term_data = GetCWDTermData()
-	if term_data[buf_name] ~= nil then
-		term_data[buf_name] = new_name
-	else
-		print("Current buffer is not a terminal")
+	for _, term in ipairs(term_data) do
+		if term.bufnr == bufnr then
+			term.name = new_name
+		else
+			print("Current buffer is not a terminal")
+		end
 	end
 end
 
 -- Delete terminal (DELETE)
 function M.delete_terminal()
-	local buf_name = vim.api.nvim_buf_get_name(0)
+	local bufnr = vim.api.nvim_win_get_buf(0)
 	local term_data = GetCWDTermData()
-	if term_data[buf_name] ~= nil then
-		term_data[buf_name] = nil
-		vim.cmd("Bdelete!")
-	else
-		print("Current buffer is not a terminal")
+	for _, term in ipairs(term_data) do
+		if term.bufnr == bufnr then
+			term = nil
+			vim.cmd("Bdelete!")
+		else
+			print("Current buffer is not a terminal")
+		end
 	end
 end
 
