@@ -63,13 +63,18 @@ end
 function M.delete_terminal()
 	local bufnr = vim.api.nvim_win_get_buf(0)
 	local term_data = GetCWDTermData()
-	for _, term in ipairs(term_data) do
+	local index = nil
+	for i, term in ipairs(term_data) do
 		if term.bufnr == bufnr then
-			term = nil
+			index = i
 			vim.cmd("Bdelete!")
-		else
-			print("Current buffer is not a terminal")
+			break
 		end
+	end
+	if index then
+		term_data[index] = nil
+	else
+		print("Current buffer is not in the terminal list")
 	end
 end
 
@@ -106,10 +111,17 @@ vim.api.nvim_create_autocmd("BufUnload", {
 	desc = "Delete terminal from terminal table",
 	group = termnames_augroup,
 	callback = function()
-		local current_buf_name = vim.fn.expand("<afile>")
+		local current_bufnr = tonumber(vim.fn.expand("<abuf>"))
 		local term_data = GetCWDTermData()
-		if term_data[current_buf_name] ~= nil then
-			term_data[current_buf_name] = nil
+		local index = nil
+		for i, term in ipairs(term_data) do
+			if term.bufnr == current_bufnr then
+				index = i
+				break
+			end
+		end
+		if index then
+			term_data[index] = nil
 		end
 	end,
 })
