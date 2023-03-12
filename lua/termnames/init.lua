@@ -32,6 +32,10 @@ function M.create_terminal(terminal_name)
 		id = term_data[#term_data].id + 1
 	end
 
+	if terminal_name == "" then
+		terminal_name = "term" .. tostring(id)
+	end
+
 	local new_term = {
 		["name"] = terminal_name,
 		["bufnr"] = vim.api.nvim_win_get_buf(0),
