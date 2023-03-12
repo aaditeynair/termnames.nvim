@@ -2,6 +2,10 @@
 
 A simple plugin that adds names to terminals
 
+## WIP
+
+termnames.nvim is a work is progress. There might be several bugs and a few quirks. If you find a bug, feel free to open an issue and if you find a fix, please open a pull request.
+
 ## Features
 
 - lightweight
@@ -43,6 +47,13 @@ return {
 
 - Closes open terminal if called without arguments
 - Pass the name of a terminal to close that terminal
+
+#### TermRefresh
+
+- Call command to reopen the terminal buffers and update the buffer handles
+- Call after loading a new directory or loading a session
+
+I have tried to automate the above step but for the life of me, I can't figure it out. If you find a fix or identify where I messed, please open a pull request.
 
 ### API
 
