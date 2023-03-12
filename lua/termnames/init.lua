@@ -64,14 +64,27 @@ function M.get_current_terminal_name()
 end
 
 -- Rename terminal (UPDATE)
-function M.rename_terminal(new_name)
-	local bufnr = vim.api.nvim_win_get_buf(0)
+function M.rename_terminal(opts)
 	local term_data = GetCWDTermData()
-	for _, term in ipairs(term_data) do
-		if term.bufnr == bufnr then
-			term.name = new_name
-		else
-			print("Current buffer is not in the terminal list")
+	local new_name = opts[1]
+	local old_name = opts[2]
+
+	if old_name ~= nil then
+		for _, term in ipairs(term_data) do
+			if term.name == old_name then
+				term.name = new_name
+			else
+				print(term.name, old_name)
+			end
+		end
+	else
+		local bufnr = vim.api.nvim_win_get_buf(0)
+		for _, term in ipairs(term_data) do
+			if term.bufnr == bufnr then
+				term.name = new_name
+			else
+				print("Current buffer is not in the terminal list")
+			end
 		end
 	end
 end
