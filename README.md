@@ -27,34 +27,34 @@ return {
 
 ### Commands
 
-### TermOpen
+#### TermOpen
 
 - Accepts one argument as input and creates a terminal with that name
 
-### TermRename
+#### TermRename
 
 - Accepts one argument as input and renames active terminal with that name
 
-### TermClose
+#### TermClose
 
 - Closes current terminal
 
 ### API
 
-### require("termnames").create_terminal(term_name)
+#### require("termnames").create_terminal(term_name)
 
-### require("termnames").get_terminals()
+#### require("termnames").get_terminals()
 
 Returns a list containing each terminal's data as a table. The table contains the name, bufnr and id of the terminal
 
-### require("termnames").get_terminal_name(bufnr)
+#### require("termnames").get_terminal_name(bufnr)
 
-### require("termnames").get_current_terminal_name()
+#### require("termnames").get_current_terminal_name()
 
-### require("termnames").rename_terminal(new_name)
+#### require("termnames").rename_terminal(new_name)
 
 Rename active terminal with new name.
 
-### require("termnames").delete_terminal()
+#### require("termnames").delete_terminal()
 
 Deletes active terminal
