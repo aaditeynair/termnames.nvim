@@ -111,6 +111,47 @@ function M.restore_terminals()
 	file:close()
 end
 
+function M.update_term_bufnr()
+	local term_data = GetCWDTermData()
+	local used_bufnr = {}
+
+	local function has_value(tab, val)
+		for _, value in ipairs(tab) do
+			if value == val then
+				return true
+			end
+		end
+
+		return false
+	end
+
+	for _, terminal in ipairs(term_data) do
+		local bufnr = terminal.bufnr
+		if has_value(vim.api.nvim_list_bufs(), bufnr) then
+			if vim.api.nvim_buf_get_name(bufnr):find("^term://") ~= nil then
+				if has_value(used_bufnr, bufnr) then
+					CreateNewTermForBuf(terminal)
+				else
+					terminal.bufnr = bufnr
+					table.insert(used_bufnr, bufnr)
+				end
+			else
+				CreateNewTermForBuf(terminal)
+			end
+		else
+			CreateNewTermForBuf(terminal)
+		end
+	end
+end
+
+function CreateNewTermForBuf(terminal)
+	local original_bufnr = vim.api.nvim_win_get_buf(0)
+	vim.cmd("terminal")
+	local new_bufnr = vim.api.nvim_win_get_buf(0)
+	terminal.bufnr = new_bufnr
+	vim.api.nvim_win_set_buf(0, original_bufnr)
+end
+
 -- Autocmds
 
 local termnames_augroup = vim.api.nvim_create_augroup("TERMNAMES_NVIM", { clear = true })
@@ -131,6 +172,15 @@ vim.api.nvim_create_autocmd("BufUnload", {
 		if index then
 			term_data[index] = nil
 		end
+	end,
+})
+
+vim.api.nvim_create_autocmd({ "DirChanged", "SessionLoadPost" }, {
+	desc = "Update the bufnr of the terminals of this directory",
+	group = termnames_augroup,
+	pattern = "*",
+	callback = function()
+		M.update_term_bufnr()
 	end,
 })
 
