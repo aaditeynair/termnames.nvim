@@ -13,8 +13,8 @@ vim.api.nvim_create_user_command("TermRename", function(opts)
 	require("termnames").rename_terminal(opts.fargs)
 end, { nargs = "+" })
 
-vim.api.nvim_create_user_command("TermClose", function()
-	require("termnames").delete_terminal()
-end, { nargs = 0 })
+vim.api.nvim_create_user_command("TermClose", function(opts)
+	require("termnames").delete_terminal(opts.args)
+end, { nargs = "?" })
 
 EOF

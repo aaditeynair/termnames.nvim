@@ -90,16 +90,26 @@ function M.rename_terminal(opts)
 end
 
 -- Delete terminal (DELETE)
-function M.delete_terminal()
+function M.delete_terminal(name)
 	local bufnr = vim.api.nvim_win_get_buf(0)
 	local term_data = GetCWDTermData()
 
 	local index = nil
-	for i, term in ipairs(term_data) do
-		if term.bufnr == bufnr then
-			index = i
-			vim.cmd("Bdelete!")
-			break
+	if name ~= "" then
+		for i, term in ipairs(term_data) do
+			if term.name == name then
+				index = i
+				vim.cmd("Bdelete! " .. term.bufnr)
+				break
+			end
+		end
+	else
+		for i, term in ipairs(term_data) do
+			if term.bufnr == bufnr then
+				index = i
+				vim.cmd("Bdelete!")
+				break
+			end
 		end
 	end
 
