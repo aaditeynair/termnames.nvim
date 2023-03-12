@@ -66,8 +66,15 @@ end
 -- Rename terminal (UPDATE)
 function M.rename_terminal(opts)
 	local term_data = GetCWDTermData()
-	local new_name = opts[1]
-	local old_name = opts[2]
+
+	local new_name, old_name
+	if type(opts) == "table" then
+		new_name = opts[1]
+		old_name = opts[2]
+	else
+		new_name = opts
+		old_name = nil
+	end
 
 	if old_name ~= nil then
 		for _, term in ipairs(term_data) do
