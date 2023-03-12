@@ -5,20 +5,33 @@ local M = {}
 
 TerminalData = TerminalData or {}
 
+-- Get the terminal data of the current wokring directory
 function GetCWDTermData()
 	local cwd = vim.fn.getcwd()
 	TerminalData[cwd] = TerminalData[cwd] or {}
 	return TerminalData[cwd]
 end
 
+function HasValue(tab, val)
+	for _, value in ipairs(tab) do
+		if value == val then
+			return true
+		end
+	end
+
+	return false
+end
+
 -- Create terminal (CREATE)
 function M.create_terminal(terminal_name)
 	vim.cmd("terminal")
 	local term_data = GetCWDTermData()
+
 	local id = 1
 	if term_data[1] then
 		id = term_data[#term_data].id + 1
 	end
+
 	local new_term = {
 		["name"] = terminal_name,
 		["bufnr"] = vim.api.nvim_win_get_buf(0),
@@ -36,7 +49,7 @@ function M.get_terminal_name(bufnr)
 	local term_data = GetCWDTermData()
 	for _, term in ipairs(term_data) do
 		if term.bufnr == bufnr then
-			return term
+			return term.name
 		end
 	end
 end
@@ -54,7 +67,7 @@ function M.rename_terminal(new_name)
 		if term.bufnr == bufnr then
 			term.name = new_name
 		else
-			print("Current buffer is not a terminal")
+			print("Current buffer is not in the terminal list")
 		end
 	end
 end
@@ -63,6 +76,7 @@ end
 function M.delete_terminal()
 	local bufnr = vim.api.nvim_win_get_buf(0)
 	local term_data = GetCWDTermData()
+
 	local index = nil
 	for i, term in ipairs(term_data) do
 		if term.bufnr == bufnr then
@@ -71,6 +85,7 @@ function M.delete_terminal()
 			break
 		end
 	end
+
 	if index then
 		term_data[index] = nil
 	else
@@ -90,17 +105,13 @@ function M.save_terminal_data()
 	file:close()
 
 	for _, term in ipairs(terminal_data) do
-		if vim.fn.bufexists(term.bufnr) then
+		if HasValue(vim.api.nvim_list_bufs(), term.bufnr) then
 			vim.api.nvim_buf_delete(term.bufnr, { force = true })
 		end
 	end
 end
 
 function M.restore_terminals()
-	if not vim.fn.filereadable(data_location) then
-		return
-	end
-
 	local file = Path:new(data_location)
 	local data = vim.json.decode(file:read())
 	if data ~= nil then
@@ -113,43 +124,36 @@ end
 
 function M.update_term_bufnr()
 	local term_data = GetCWDTermData()
-	local used_bufnr = {}
+	local used_buf_handles = {}
 
-	local function has_value(tab, val)
-		for _, value in ipairs(tab) do
-			if value == val then
-				return true
-			end
-		end
-
-		return false
+	local function create_new_term_buffer(terminal)
+		local original_bufnr = vim.api.nvim_win_get_buf(0)
+		vim.cmd("terminal")
+		local new_bufnr = vim.api.nvim_win_get_buf(0)
+		terminal.bufnr = new_bufnr
+		vim.api.nvim_win_set_buf(0, original_bufnr)
 	end
 
 	for _, terminal in ipairs(term_data) do
 		local bufnr = terminal.bufnr
-		if has_value(vim.api.nvim_list_bufs(), bufnr) then
+		-- check if buffer with this handle exists
+		if HasValue(vim.api.nvim_list_bufs(), bufnr) then
+			-- check if the buffer is a terminal
 			if vim.api.nvim_buf_get_name(bufnr):find("^term://") ~= nil then
-				if has_value(used_bufnr, bufnr) then
-					CreateNewTermForBuf(terminal)
+				-- if it is a terminal, check if the handle has been used by other terminals
+				if HasValue(used_buf_handles, bufnr) then
+					create_new_term_buffer(terminal)
 				else
 					terminal.bufnr = bufnr
-					table.insert(used_bufnr, bufnr)
+					table.insert(used_buf_handles, bufnr)
 				end
 			else
-				CreateNewTermForBuf(terminal)
+				create_new_term_buffer(terminal)
 			end
 		else
-			CreateNewTermForBuf(terminal)
+			create_new_term_buffer(terminal)
 		end
 	end
-end
-
-function CreateNewTermForBuf(terminal)
-	local original_bufnr = vim.api.nvim_win_get_buf(0)
-	vim.cmd("terminal")
-	local new_bufnr = vim.api.nvim_win_get_buf(0)
-	terminal.bufnr = new_bufnr
-	vim.api.nvim_win_set_buf(0, original_bufnr)
 end
 
 -- Autocmds
@@ -175,6 +179,7 @@ vim.api.nvim_create_autocmd("BufUnload", {
 	end,
 })
 
+-- DOESN'T WORK. IF YOU KNOW WHY, PLEASE HELP
 vim.api.nvim_create_autocmd({ "DirChanged", "SessionLoadPost" }, {
 	desc = "Update the bufnr of the terminals of this directory",
 	group = termnames_augroup,
