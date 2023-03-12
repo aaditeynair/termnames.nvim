@@ -81,7 +81,7 @@ function M.rename_terminal(opts)
 			if term.name == old_name then
 				term.name = new_name
 			else
-				print(term.name, old_name)
+				print("Current buffer is not in the terminal list")
 			end
 		end
 	else
