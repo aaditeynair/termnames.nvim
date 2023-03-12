@@ -11,6 +11,7 @@ A simple plugin that adds names to terminals
 
 - Neovim >= 0.8.0 (Might work with earlier versions. Haven't tested)
 - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
+- [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim)
 
 ## Installation
 
@@ -29,32 +30,53 @@ return {
 
 #### TermOpen
 
-- Accepts one argument as input and creates a terminal with that name
+- Passing a name to the command creates a terminal with that name
+- Not giving a name creates a terminal with an automatic name
 
 #### TermRename
 
-- Accepts one argument as input and renames active terminal with that name
+- Accepts one or two arguments
+- First argument is the new name
+- Second argument is optional. It is the name of the terminal which is to be changed
 
 #### TermClose
 
-- Closes current terminal
+- Closes open terminal if called without arguments
+- Pass the name of a terminal to close that terminal
 
 ### API
 
 #### require("termnames").create_terminal(term_name)
 
+- `term_name` must be a string
+
 #### require("termnames").get_terminals()
 
-Returns a list containing each terminal's data as a table. The table contains the name, bufnr and id of the terminal
+- Returns a list containing each terminal's data as a table
+
+```json
+{
+  "id": 1,
+  "name": "term1",
+  "bufnr": 3
+}
+```
 
 #### require("termnames").get_terminal_name(bufnr)
 
+- Pass the `bufnr` of a terminal buffer to get its name
+
 #### require("termnames").get_current_terminal_name()
 
-#### require("termnames").rename_terminal(new_name)
+- Returns the name of the current terminal
+- Can be used in statuslines, winbars, etc. Example given below
 
-Rename active terminal with new name.
+#### require("termnames").rename_terminal(args)
 
-#### require("termnames").delete_terminal()
+- If `args` is a string, the active terminal is renamed to args
+- If `args` is table, the first item is taken as the new name and the second item as the name of the terminal to be changed
 
-Deletes active terminal
+#### require("termnames").delete_terminal({term_name})
+
+- If `term_name` is provided then the terminal with that name is deleted
+- Otherwise the active terminal is deleted
