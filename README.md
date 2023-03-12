@@ -91,3 +91,23 @@ I have tried to automate the above step but for the life of me, I can't figure i
 
 - If `term_name` is provided then the terminal with that name is deleted
 - Otherwise the active terminal is deleted
+
+### Example
+
+#### Lualine
+
+```lua
+local function get_term_name()
+    return require("termnames").get_current_terminal_name()
+end
+
+...
+
+{
+	get_term_name,
+	cond = function()
+    	return vim.api.nvim_buf_get_name(0):find("^term://") ~= nil
+	end,
+},
+
+```
