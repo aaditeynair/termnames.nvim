@@ -1,6 +1,7 @@
 # termnames.nvim
 
 A simple plugin that adds names to terminals
+
 ![demo image](https://user-images.githubusercontent.com/85427178/224555211-99160423-dbd6-4df5-a8dd-7d3e8b1592c1.png)
 
 ## WIP
