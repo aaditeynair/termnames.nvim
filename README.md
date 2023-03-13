@@ -4,9 +4,11 @@ A simple plugin that adds names to terminals
 
 ![demo image](https://user-images.githubusercontent.com/85427178/224555211-99160423-dbd6-4df5-a8dd-7d3e8b1592c1.png)
 
-## WIP
+## Note
 
 termnames.nvim is a work is progress. There might be several bugs and a few quirks. If you find a bug, feel free to open an issue and if you find a fix, please open a pull request.
+
+termnames.nvim works seamlessly with my config but you might have a few problems with yours. For the plugin to perform perfectly, it is required for `TermSave` or `save_terminal_data()` to run before `mksession`. termnames.nvim also needs `TermRefresh` or `update_term_bufnr()` to run after loading a session or a new working directory. This is easy to implement if your session manager provides hooks. If you find or know a way to make this automatic for a session manager or for all session managers, please open a issue or a pull request. I will be more than happy to make termnames.nvim better.
 
 ## Features
 
@@ -50,12 +52,16 @@ return {
 - Closes open terminal if called without arguments
 - Pass the name of a terminal to close that terminal
 
+#### TermSave
+
+- Saves the terminal data and closes the terminal buffer
+- Call before `mksession`. Otherwise you will have extra terminal buffers in the next session
+- Automatically called on `ExitPre`
+
 #### TermRefresh
 
 - Call command to reopen the terminal buffers and update the buffer handles
 - Call after loading a new directory or loading a session
-
-I have tried to automate the above step but for the life of me, I can't figure it out. If you find a fix or identify where I messed, please open a pull request.
 
 ### API
 
@@ -93,6 +99,17 @@ I have tried to automate the above step but for the life of me, I can't figure i
 
 - If `term_name` is provided then the terminal with that name is deleted
 - Otherwise the active terminal is deleted
+
+#### require("termnames").save_terminal_data()
+
+- Saves the terminal data and closes buffers
+- Call before your session is saved. Automatically called on `ExitPre`
+
+#### require("termnames").update_term_bufnr()
+
+- Cycles through the data and opens terminal buffers and updates the buffer handles
+- Must be called after loading a session or changing the directory
+- Runs on `DirChanged` and `SessionLoadPost` but it is a bit finicky. Recommended to run on your own
 
 ### Example
 
