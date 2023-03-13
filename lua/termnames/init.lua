@@ -137,7 +137,10 @@ function M.save_terminal_data()
     data[vim.fn.getcwd()] = terminal_data
     file:write(vim.json.encode(data), "w")
     file:close()
+end
 
+function M.close_term_buffers()
+    local terminal_data = GetCWDTermData()
     for _, term in ipairs(terminal_data) do
         if HasValue(vim.api.nvim_list_bufs(), term.bufnr) then
             vim.api.nvim_buf_delete(term.bufnr, { force = true })
