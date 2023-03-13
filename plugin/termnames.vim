@@ -21,4 +21,8 @@ vim.api.nvim_create_user_command("TermRefresh", function()
 	require("termnames").update_term_bufnr()
 end, { nargs = 0 })
 
+vim.api.nvim_create_user_command("TermSave", function()
+	require("termnames").save_terminal_data()
+end, { nargs = 0 })
+
 EOF

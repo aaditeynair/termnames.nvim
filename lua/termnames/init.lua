@@ -137,6 +137,8 @@ function M.save_terminal_data()
     data[vim.fn.getcwd()] = terminal_data
     file:write(vim.json.encode(data), "w")
     file:close()
+
+    M.close_term_buffers()
 end
 
 function M.close_term_buffers()
@@ -216,7 +218,6 @@ vim.api.nvim_create_autocmd("BufUnload", {
     end,
 })
 
--- DOESN'T WORK. IF YOU KNOW WHY, PLEASE HELP
 vim.api.nvim_create_autocmd({ "DirChanged", "SessionLoadPost" }, {
     desc = "Update the bufnr of the terminals of this directory",
     group = termnames_augroup,
