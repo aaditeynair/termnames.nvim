@@ -28,7 +28,7 @@ With lazy.nvim
 ```lua
 return {
     "aaditeynair/termnames.nvim",
-    cmd = {"TermOpen", "TermRename", "TermClose"}
+    cmd = {"TermOpen", "TermRename", "TermClose", "TermSave", "TermRefresh"}
 }
 ```
 
