@@ -18,7 +18,7 @@ vim.api.nvim_create_user_command("TermClose", function(opts)
 end, { nargs = "?" })
 
 vim.api.nvim_create_user_command("TermRefresh", function()
-	require("termnames").restore_terminals()
+	require("termnames").update_term_bufnr()
 end, { nargs = 0 })
 
 vim.api.nvim_create_user_command("TermSave", function()
