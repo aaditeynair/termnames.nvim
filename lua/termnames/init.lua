@@ -5,7 +5,8 @@ local M = {}
 
 TerminalData = TerminalData or {}
 
--- Get the terminal data of the current wokring directory
+-- Global functions
+
 function GetCWDTermData()
     local cwd = vim.fn.getcwd()
     TerminalData[cwd] = TerminalData[cwd] or {}
@@ -100,19 +101,29 @@ end
 function M.delete_terminal(name)
     local term_data = GetCWDTermData()
 
+    local bdelete_exists, bdelete = pcall(require, "bufdelete")
     if name ~= "" then
         for _, term in ipairs(term_data) do
             if term.name == name then
-                vim.cmd("Bdelete! " .. term.bufnr)
+                if bdelete_exists then
+                    bdelete.bufdelete(term.bufnr, true)
+                else
+                    vim.cmd("bd!" .. term.bufnr)
+                end
                 return
             end
         end
         print("Terminal called " .. name .. " doesn't exist")
     else
+        local bufnr = vim.api.nvim_win_get_buf(0)
         for _, term in ipairs(term_data) do
-            local bufnr = vim.api.nvim_win_get_buf(0)
             if term.bufnr == bufnr then
-                vim.cmd("Bdelete!")
+                if bdelete_exists then
+                    bdelete.bufdelete(0, true)
+                else
+                    vim.cmd("split | bnext")
+                    vim.cmd("wincmd p | bd!")
+                end
                 return
             end
         end
