@@ -19,7 +19,7 @@ termnames.nvim works seamlessly with my config but you might have a few problems
 
 - Neovim >= 0.8.0 (Might work with earlier versions. Haven't tested)
 - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
-- [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim)
+- [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) (Optional)
 
 ## Installation
 
@@ -123,10 +123,10 @@ end
 ...
 
 {
-	get_term_name,
-	cond = function()
-    	return vim.api.nvim_buf_get_name(0):find("^term://") ~= nil
-	end,
+ get_term_name,
+ cond = function()
+     return vim.api.nvim_buf_get_name(0):find("^term://") ~= nil
+ end,
 },
 
 ```
