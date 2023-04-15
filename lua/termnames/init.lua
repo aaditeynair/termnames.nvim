@@ -84,6 +84,16 @@ function M.get_current_terminal_name()
     return M.get_terminal_name(current_bufnr)
 end
 
+function M.terminal_exists(term_name)
+    local term_data = GetCWDTermData()
+    for _, term in ipairs(term_data) do
+        if term.name == term_name then
+            return true
+        end
+    end
+    return false
+end
+
 -- Rename terminal (UPDATE)
 function M.rename_terminal(opts)
     local term_data = GetCWDTermData()

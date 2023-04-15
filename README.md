@@ -98,6 +98,11 @@ return {
 - Returns the name of the current terminal
 - Can be used in statuslines, winbars, etc. Example given below
 
+#### require("termnames").terminal_exists(term_name)
+
+- Returns `true` if a terminal with the name `term_name` exists
+- If the terminal doesn't exist, it returns false
+
 #### require("termnames").rename_terminal(args)
 
 - If `args` is a string, the active terminal is renamed to args
