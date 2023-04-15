@@ -24,9 +24,25 @@ function HasValue(tab, val)
 end
 
 -- Create terminal (CREATE)
-function M.create_terminal(terminal_name)
+function M.create_terminal(opts)
     vim.cmd("terminal")
     local term_data = GetCWDTermData()
+
+    local terminal_name, cmd = "", ""
+
+    if type(opts) == "string" then
+        terminal_name = opts
+    elseif type(opts) == "table" then
+        terminal_name = opts[1]
+        for i = 2, #opts, 1 do
+            local whitespace = " "
+            if i == 2 then
+                whitespace = ""
+            end
+
+            cmd = cmd .. whitespace .. opts[i]
+        end
+    end
 
     local id = 1
     if term_data[1] then
@@ -43,6 +59,10 @@ function M.create_terminal(terminal_name)
         ["id"] = id,
     }
     table.insert(term_data, new_term)
+
+    if cmd ~= "" then
+        M.run_terminal_cmd({ terminal_name, cmd })
+    end
 end
 
 -- Get data about terminals (READ)

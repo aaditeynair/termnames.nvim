@@ -40,6 +40,7 @@ return {
 
 - Passing a name to the command creates a terminal with that name
 - Not giving a name creates a terminal with an automatic name
+- Any args passed after the terminal name are executed as a shell command
 
 #### TermRename
 
@@ -70,9 +71,11 @@ return {
 
 ### API
 
-#### require("termnames").create_terminal(term_name)
+#### require("termnames").create_terminal([term_name] or [{term_name, cmd}])
 
-- `term_name` must be a string
+- If only `term_name` is passed as a string, a terminal with that name is created
+- If no args are passed, a name is automatically assigned to the terminal
+- If the arg is a table(list) is the format of `{term_name, cmd}`, a terminal with the given name is created and the cmd is executed
 
 #### require("termnames").get_terminals()
 
