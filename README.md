@@ -52,6 +52,11 @@ return {
 - Closes open terminal if called without arguments
 - Pass the name of a terminal to close that terminal
 
+#### TermRun
+
+- Run a command using the terminal name
+- Pass the terminal name as the first arg and the following args are taken as the command
+
 #### TermSave
 
 - Saves the terminal data and closes the terminal buffer
@@ -95,10 +100,15 @@ return {
 - If `args` is a string, the active terminal is renamed to args
 - If `args` is table, the first item is taken as the new name and the second item as the name of the terminal to be changed
 
-#### require("termnames").delete_terminal({term_name})
+#### require("termnames").delete_terminal([ term_name ])
 
 - If `term_name` is provided then the terminal with that name is deleted
 - Otherwise the active terminal is deleted
+
+#### require("termnames").run_terminal_cmd({term_name, cmd})
+
+- Run a shell cmd in a terminal using its name
+- Pass `term_name` and `cmd` in a table(list)
 
 #### require("termnames").save_terminal_data()
 

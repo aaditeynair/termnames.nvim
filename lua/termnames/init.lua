@@ -131,6 +131,48 @@ function M.delete_terminal(name)
     end
 end
 
+--  Run commands for terminal
+
+function M.run_terminal_cmd(opts)
+    local term_data = GetCWDTermData()
+
+    if not type(opts) == "table" then
+        print("Options must be passed as a table in the form of {term_name, cmd}")
+        return nil
+    end
+
+    local term_name = opts[1]
+    local cmd = ""
+    for i = 2, #opts, 1 do
+        local whitespace = " "
+        if i == 2 then
+            whitespace = ""
+        end
+
+        cmd = cmd .. whitespace .. opts[i]
+    end
+
+    if term_name == nil or cmd == nil then
+        print("Supply both the term_name and cmd in a table as opts. ")
+        return
+    end
+
+    local terminal = nil
+    for _, term in ipairs(term_data) do
+        if term.name == term_name then
+            terminal = term
+            break
+        end
+    end
+
+    if terminal ~= nil then
+        local term_job_id = vim.api.nvim_buf_get_var(terminal.bufnr, "terminal_job_id")
+        vim.fn.chansend(term_job_id, cmd .. "\n")
+    else
+        print("Terminal with name " .. term_name .. " doesn't exist")
+    end
+end
+
 -- Save and restore terminal data
 
 function M.save_terminal_data()
