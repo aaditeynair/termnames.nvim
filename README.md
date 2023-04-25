@@ -32,6 +32,17 @@ return {
 }
 ```
 
+## Setup
+
+```lua
+require("termnames").setup({
+    -- Add DirChanges to this if needed. When creating and updating the teminal info,
+    -- termnames tries to set the current buffer as the one before a terminal was
+    -- opened. However, this may cause issues where the previous buffer was deleted by say, a session manager.
+    update_term_bufnr_events = {"SessionLoadPost"}
+})
+```
+
 ## Usage
 
 ### Commands
@@ -127,7 +138,7 @@ return {
 
 - Cycles through the data and opens terminal buffers and updates the buffer handles
 - Must be called after loading a session or changing the directory
-- Runs on `DirChanged` and `SessionLoadPost` but it is a bit finicky. Recommended to run on your own
+- Runs on `SessionLoadPost` but it is a bit finicky. Recommended to run on your own
 
 ### Example
 

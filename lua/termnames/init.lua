@@ -2,6 +2,7 @@ local Path = require("plenary.path")
 local data_location = vim.fn.stdpath("data") .. "/termnames.json"
 
 local M = {}
+M.update_term_bufnr_events = { "SessionLoadPost" }
 
 TerminalData = TerminalData or {}
 
@@ -21,6 +22,13 @@ function HasValue(tab, val)
     end
 
     return false
+end
+
+function M.setup(opts)
+    local events = opts.events
+    if type(events) == "table" or type(events) == "string" then
+        M.update_term_bufnr_events = events
+    end
 end
 
 -- Create terminal (CREATE)
@@ -298,7 +306,7 @@ vim.api.nvim_create_autocmd("BufUnload", {
     end,
 })
 
-vim.api.nvim_create_autocmd({ "DirChanged", "SessionLoadPost" }, {
+vim.api.nvim_create_autocmd(M.update_term_bufnr_events, {
     desc = "Update the bufnr of the terminals of this directory",
     group = termnames_augroup,
     pattern = "*",
