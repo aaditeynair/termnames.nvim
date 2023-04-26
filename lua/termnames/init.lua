@@ -269,7 +269,14 @@ function M.update_term_bufnr()
 
     local function create_new_term_buffer(terminal)
         local original_bufnr = vim.api.nvim_win_get_buf(0)
+
         vim.cmd("terminal")
+        vim.cmd("setlocal nonumber norelativenumber")
+        vim.keymap.set("n", M.close_keybinding, "<CMD>TermClose<CR>", {
+            silent = true,
+            buffer = 0,
+        })
+
         local new_bufnr = vim.api.nvim_win_get_buf(0)
         terminal.bufnr = new_bufnr
         vim.api.nvim_win_set_buf(0, original_bufnr)
