@@ -34,6 +34,13 @@ end
 -- Create terminal (CREATE)
 function M.create_terminal(opts)
     vim.cmd("terminal")
+
+    vim.cmd("setlocal nonumber norelativenumber")
+    vim.keymap.set("n", "<leader>q", "<CMD>TermClose<CR>", {
+        silent = true,
+        buffer = 0,
+    })
+
     local term_data = GetCWDTermData()
 
     local terminal_name, cmd = "", ""
