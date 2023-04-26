@@ -39,7 +39,10 @@ require("termnames").setup({
     -- Add DirChanges to this if needed. When creating and updating the teminal info,
     -- termnames tries to set the current buffer as the one before a terminal was
     -- opened. However, this may cause issues where the previous buffer was deleted by say, a session manager.
-    update_term_bufnr_events = {"SessionLoadPost"}
+    update_term_bufnr_events = {"SessionLoadPost"},
+
+    -- Termnames sets this key combination to run TermClose for every terminal buffer it creates
+    close_term_keybinding = "<leader>q",
 })
 ```
 

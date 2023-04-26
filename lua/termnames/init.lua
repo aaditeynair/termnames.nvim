@@ -3,6 +3,7 @@ local data_location = vim.fn.stdpath("data") .. "/termnames.json"
 
 local M = {}
 M.update_term_bufnr_events = { "SessionLoadPost" }
+M.close_keybinding = "<leader>q"
 
 TerminalData = TerminalData or {}
 
@@ -26,8 +27,14 @@ end
 
 function M.setup(opts)
     local events = opts.events
+    local keybinding = opts.close_term_keybinding
+
     if type(events) == "table" or type(events) == "string" then
         M.update_term_bufnr_events = events
+    end
+
+    if type(keybinding) == "string" then
+        M.close_keybinding = keybinding
     end
 end
 
@@ -36,7 +43,7 @@ function M.create_terminal(opts)
     vim.cmd("terminal")
 
     vim.cmd("setlocal nonumber norelativenumber")
-    vim.keymap.set("n", "<leader>q", "<CMD>TermClose<CR>", {
+    vim.keymap.set("n", M.close_keybinding, "<CMD>TermClose<CR>", {
         silent = true,
         buffer = 0,
     })
